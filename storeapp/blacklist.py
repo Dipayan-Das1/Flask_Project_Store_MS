@@ -1,0 +1,2 @@
+BLACKLIST_IDS = {2,3}
+BLACKLIST_JTI = set()
