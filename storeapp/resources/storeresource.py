@@ -1,5 +1,5 @@
 from flask_restful import Resource,reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 from storeapp.models.storemodel import StoreModel
 
 class Store(Resource):
@@ -9,7 +9,7 @@ class Store(Resource):
     parser.add_argument("email",type=str,required=True,help="Store email id is required")
 
     ###@jwt_required() parentheses is required
-    @jwt_required()
+    @jwt_required
     def get(self,name):
         store = StoreModel.get_store_by_name(name)
         if store:
@@ -17,7 +17,7 @@ class Store(Resource):
         else:
             return {"message":"Store {} does not exist".format(name)}
 
-    @jwt_required()
+    @jwt_required
     def post(self,name):
         store = StoreModel.get_store_by_name(name)
         if store:
@@ -28,7 +28,7 @@ class Store(Resource):
             store.save_to_db()
         return {"message":"Store created successfully"}, 201
 
-    @jwt_required()
+    @jwt_required
     def delete(self,name):
         store = StoreModel.get_store_by_name(name)
         if store:

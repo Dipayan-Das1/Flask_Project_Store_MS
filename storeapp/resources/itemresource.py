@@ -1,6 +1,6 @@
 from flask_restful import Resource,reqparse
 from storeapp.models.storemodel import ItemModel,StoreModel
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_claims, fresh_jwt_required
 
 
 class Item(Resource):
@@ -20,8 +20,9 @@ class Item(Resource):
         else:
             return {"message": "Store {} not found".format(store_name)}, 404
 
-    @jwt_required
+    @fresh_jwt_required
     def post(self,store_name,item_name):
+        """@fresh_jwt_required means always a fresh jwt token is needed"""
         store = StoreModel.get_store_by_name(store_name)
         if store:
             item = ItemModel.get_item_by_name(item_name, store.id)
@@ -55,6 +56,9 @@ class Item(Resource):
 
     @jwt_required
     def delete(self,store_name,item_name):
+        claims = get_jwt_claims()
+        if not claims['isadmin']:
+            return {"message":"User does not have enough permissions to delete"},401
         store = StoreModel.get_store_by_name(store_name)
         if store:
             item = ItemModel.get_item_by_name(item_name, store.id)
