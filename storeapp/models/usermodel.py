@@ -30,4 +30,11 @@ class UserModel(db.Model):
         db.session.commit()
 
     def json(self):
-        return {id:self.id,"username":self.username,"password":self.password}
+        return {"userId":self.id,"username":self.username,"password":self.password}
+
+    def json_secure(self):
+        return {"userId":self.id,"username":self.username}
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
