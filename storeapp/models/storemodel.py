@@ -1,15 +1,18 @@
 from storeapp.db import db
+from typing import Dict, Union, List
 
+ItemJson = Dict[str,Union[str,int,float]]
+StoreJson = Dict[str,Union[str,List[ItemJson]]]
 
 class StoreModel(db.Model):
     """Model class for store"""
     __tablename__ = "store"
 
     id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String(100),nullable=False)
-    email = db.Column(db.String(100),nullable=False)
+    name = db.Column(db.String(100),nullable=False,unique=True)
+    email = db.Column(db.String(100),nullable=False,unique=True)
 
-    def __init__(self,name,email):
+    def __init__(self,name:str,email:str):
         self.name = name
         self.email = email
 
@@ -17,20 +20,21 @@ class StoreModel(db.Model):
     items = db.relationship("ItemModel",lazy="dynamic")
 
     #self.items.all() loads all the item data
-    def json(self):
+    def json(self) -> StoreJson:
         return {"name":self.name,"email":self.email,"items":[itm.json() for itm in self.items.all()]}
 
     @classmethod
-    def get_store_by_name(cls,name):
+    def get_store_by_name(cls,name:str) -> "StoreModel":
         return cls.query.filter_by(name=name).first()
 
-    def save_to_db(self):
+    def save_to_db(self) -> None:
         db.session.add(self)
         db.session.commit()
 
-    def delete(self):
+    def delete(self) -> None:
         db.session.remove(self)
         db.session.commit()
+
 
 
 class ItemModel(db.Model):
@@ -46,7 +50,7 @@ class ItemModel(db.Model):
     store_id = db.Column(db.Integer,db.ForeignKey('store.id'))
     store = db.relationship("StoreModel")
 
-    def __init__(self,name,price,storeId):
+    def __init__(self,name:str,price:float,storeId:int):
         self.name = name
         self.price = price
         self.store_id = storeId
@@ -66,5 +70,5 @@ class ItemModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def json(self):
+    def json(self) -> ItemJson:
         return {"name":self.name,"price":self.price}

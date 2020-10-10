@@ -13,16 +13,16 @@ class UserModel(db.Model):
     username = db.Column(db.String(80))
     password = db.Column(db.String(100))
 
-    def __init__(self,username,password):
+    def __init__(self,username:str,password:str):
         self.username = username
         self.password = password
 
     @classmethod
-    def find_by_name(cls,username) -> "UserModel":
+    def find_by_name(cls,username:str) -> "UserModel":
         return cls.query.filter_by(username=username).first()
 
     @classmethod
-    def find_by_id(cls,_id):
+    def find_by_id(cls,_id:int):
         return cls.query.filter_by(id=_id).first()
 
     def save_to_db(self):
@@ -35,6 +35,6 @@ class UserModel(db.Model):
     def json_secure(self):
         return {"userId":self.id,"username":self.username}
 
-    def delete(self):
+    def delete(self) -> None:
         db.session.delete(self)
         db.session.commit()
