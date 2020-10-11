@@ -17,11 +17,7 @@ class StoreModel(db.Model):
         self.email = email
 
     #Back reference ...lazy loading enabled
-    items = db.relationship("ItemModel",lazy="dynamic")
-
-    #self.items.all() loads all the item data
-    def json(self) -> StoreJson:
-        return {"name":self.name,"email":self.email,"items":[itm.json() for itm in self.items.all()]}
+    items = db.relationship("ItemModel")
 
     @classmethod
     def get_store_by_name(cls,name:str) -> "StoreModel":
@@ -50,14 +46,6 @@ class ItemModel(db.Model):
     store_id = db.Column(db.Integer,db.ForeignKey('store.id'))
     store = db.relationship("StoreModel")
 
-    def __init__(self,name:str,price:float,storeId:int):
-        self.name = name
-        self.price = price
-        self.store_id = storeId
-
-    def json(self):
-        return {"name":self.name,"price":self.price}
-
     @classmethod
     def get_item_by_name(cls,name,storeId) -> "ItemModel":
         return cls.query.filter_by(name=name,store_id=storeId).first()
@@ -69,6 +57,3 @@ class ItemModel(db.Model):
     def delete_item(self):
         db.session.delete(self)
         db.session.commit()
-
-    def json(self) -> ItemJson:
-        return {"name":self.name,"price":self.price}

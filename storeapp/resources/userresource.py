@@ -1,12 +1,15 @@
-from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required
+from flask_restful import Resource
+from flask import request
+from flask_jwt_extended import jwt_required, fresh_jwt_required
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
 from flask import Request
 from storeapp.models.usermodel import UserModel
 from storeapp.blacklist import BLACKLIST_JTI
-
+from storeapp.schemas.userschema import UserSchema
+from marshmallow import ValidationError
 
 REQUIRED_FIELD = "{} is mandatory"
+user_schema = UserSchema()
 
 class UserRegister(Resource):
     """This class is a resource class to be used for user registration"""
@@ -14,21 +17,21 @@ class UserRegister(Resource):
     USER_EXISTS = "User with name {} already exists"
     USER_CREATED = "User created"
 
-    parser = reqparse.RequestParser()
-    parser.add_argument("username",type=str,required=True,help=REQUIRED_FIELD.format("username"))
-    parser.add_argument("password", type=str, required=True, help=REQUIRED_FIELD.format("password"))
 
     @classmethod
     def post(cls):
         """register user post method"""
-        args = UserRegister.parser.parse_args()
-        username_arg = args["username"]
-        userModel = UserModel.find_by_name(username_arg)
+        try:
+            user_data = user_schema.load(request.get_json())
+        except ValidationError as ve:
+            return ve.messages,400
+        print(user_data)
+        print(type(user_data))
+        userModel = UserModel.find_by_name(user_data.username)
         if userModel:
-            return {"message":cls.USER_EXISTS.format(username_arg)},400
+            return {"message":cls.USER_EXISTS.format(user_data.username)},400
         else:
-            userModel = UserModel(args["username"],args["password"])
-            userModel.save_to_db()
+            user_data.save_to_db()
             return {"message":cls.USER_CREATED}, 201
 
 
@@ -38,8 +41,8 @@ class User(Resource):
     USER_DELETED = "User deleted successfully"
     USER_NOT_FOUND = "User not found"
 
-    @jwt_required
     @classmethod
+    @fresh_jwt_required
     def delete(cls,userid):
         user = UserModel.find_by_id(userid)
         if (user):
@@ -48,30 +51,28 @@ class User(Resource):
         else:
             return {"message": cls.USER_NOT_FOUND}, 400
 
-
-    @jwt_required
     @classmethod
+    @jwt_required
     def get(cls,userid):
         user = UserModel.find_by_id(userid)
         print(user);
         if(user):
-            return user.json_secure(),200
+            return user_schema.dump(user),200
         else:
             return {"message":cls.USER_NOT_FOUND},400
 
-
-
 class UserLogin(Resource):
 
-    parser = reqparse.RequestParser()
-    parser.add_argument("username", type=str, required=True, help=REQUIRED_FIELD.format("username"))
-    parser.add_argument("password", type=str, required=True, help=REQUIRED_FIELD.format("password"))
-
     def post(self):
-        args = UserLogin.parser.parse_args()
-        user = UserModel.find_by_name(args["username"])
+
+        try:
+            user_data = user_schema.load(request.get_json())
+        except ValidationError as ve:
+            return ve.messages,400
+
+        user = UserModel.find_by_name(user_data.username)
         print(user.id)
-        if user and user.password == args["password"]:
+        if user and user.password == user_data.password:
             access_token =create_access_token(identity=user.id,fresh=True)
             refresh_token = create_refresh_token((user.id))
             #refresh token is a token that can be used when the original token has expired, dont allow access to sensitive resources

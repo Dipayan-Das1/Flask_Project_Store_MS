@@ -10,12 +10,9 @@ class UserModel(db.Model):
 
     #column definitions
     id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String(80))
-    password = db.Column(db.String(100))
+    username = db.Column(db.String(80),nullable=False,unique=True)
+    password = db.Column(db.String(100),nullable=False)
 
-    def __init__(self,username:str,password:str):
-        self.username = username
-        self.password = password
 
     @classmethod
     def find_by_name(cls,username:str) -> "UserModel":
@@ -28,12 +25,6 @@ class UserModel(db.Model):
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
-
-    def json(self):
-        return {"userId":self.id,"username":self.username,"password":self.password}
-
-    def json_secure(self):
-        return {"userId":self.id,"username":self.username}
 
     def delete(self) -> None:
         db.session.delete(self)
