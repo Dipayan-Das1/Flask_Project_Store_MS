@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Api,Resource
-from storeapp.resources.userresource import UserRegister, User, UserLogin, TokenRefresh,LogoutResource
+from storeapp.resources.userresource import UserRegister, User, UserLogin, TokenRefresh,LogoutResource,UserConfirmationResource
 from storeapp.resources.storeresource import Store
 from storeapp.resources.itemresource import Item
 #from flask_jwt import JWT
@@ -52,6 +52,7 @@ api.add_resource(User,"/user/<int:userid>")
 api.add_resource(UserLogin,"/login")
 api.add_resource(TokenRefresh,"/refresh")
 api.add_resource(LogoutResource,"/logout")
+api.add_resource(UserConfirmationResource,"/confirm/<int:userid>")
 
 #flask decorator to setup before first request executes
 @app.before_first_request

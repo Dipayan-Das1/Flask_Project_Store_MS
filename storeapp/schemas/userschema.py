@@ -14,7 +14,7 @@ from storeapp.models.usermodel import UserModel
 
 class UserSchema(flask_marshmallow.SQLAlchemyAutoSchema):
     class Meta:
-        dump_only = ("id",)
+        dump_only = ("id","activated")
         load_only = ("password",)
         model = UserModel
         load_instance = True
