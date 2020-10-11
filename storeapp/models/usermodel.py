@@ -4,9 +4,6 @@ from storeapp.db import db
 #pip install requests
 from requests import Response,post,request
 
-MAILGUN_API_KEY = "80f20a52093fac1f92f2ae4fe747b3c9-0d2e38f7-27cf3d7f"
-MAILGUN_DOMAIN = "sandbox11ede2c527e5418b996d509b506475e2.mailgun.org"
-
 class UserModel(db.Model):
     """Model class for user"""
 
