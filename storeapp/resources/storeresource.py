@@ -1,7 +1,6 @@
 from flask_restful import Resource,reqparse
 from flask_jwt_extended import jwt_required
 from storeapp.models.storemodel import StoreModel
-from storeapp.flaskmarshmallow import flask_marshmallow
 from storeapp.schemas.itemschema import StoreSchema
 from flask import request
 from marshmallow import ValidationError
