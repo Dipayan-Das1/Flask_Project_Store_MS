@@ -1,6 +1,8 @@
 from requests import Response,post,request
 from typing import List
 import os
+from storeapp.localization.internalization import gettext
+
 #pip install python-dotenc ....values stored in .env file
 MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN")
 MAILGUN_API_KEY = os.environ.get("MAILGUN_API_KEY")
@@ -13,9 +15,9 @@ class MailGunException(Exception):
 def send_email_confirmation(to:List,subject:str,mail_body:str):
 
     if MAILGUN_DOMAIN is None:
-        raise MailGunException("Mailgun domain could not be loaded")
+        raise MailGunException(gettext("mailgun_domain_not_loaded"))
     if MAILGUN_API_KEY is None:
-        raise MailGunException("Mailgun API key could not be loaded")
+        raise MailGunException(gettext("mailgun_api_key_not_found"))
 
     resp = post(
         f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages",
@@ -26,6 +28,6 @@ def send_email_confirmation(to:List,subject:str,mail_body:str):
               "html": mail_body})
 
     if resp.status_code != 200:
-        raise MailGunException("Registration email could not be sent")
+        raise MailGunException(gettext("email_not_sent"))
 
     return resp

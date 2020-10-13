@@ -9,6 +9,7 @@ from marshmallow import ValidationError
 from .confirmationresource import send_email
 from storeapp.mail.emailsender import MailGunException
 from traceback import print_tb
+from storeapp.localization.internalization import gettext
 
 
 REQUIRED_FIELD = "{} is mandatory"
@@ -34,23 +35,23 @@ class UserRegister(Resource):
         print(type(user_data))
         userModel = UserModel.find_by_name(user_data.username)
         if userModel:
-            return {"message":cls.USER_EXISTS.format(user_data.username)},400
+            return {"message":gettext("user_exists").format(user_data.username)},400
         userModel = UserModel.find_by_email(user_data.email)
         if userModel:
-            return {"message":cls.USER_EXISTS.format(user_data.email)},400
+            return {"message":gettext("user_exists").format(user_data.email)},400
         else:
             try:
                 user_data.save_to_db()
                 send_email(user_data.id)
-                return {"message": cls.USER_CREATED}, 201
+                return {"message": gettext("user_created_email_sent")}, 201
             except MailGunException as e:
                 print_tb(e.__traceback__)
                 user_data.delete()
-                return {"message": cls.USER_CREATION_FAILED}, 500
+                return {"message": gettext("user_creation_failed")}, 500
             except Exception as e:
                 user_data.delete()
                 print(e)
-                return {"message": cls.USER_CREATION_FAILED}, 500
+                return {"message": gettext("user_creation_failed")}, 500
 
 
 class User(Resource):
