@@ -3,6 +3,7 @@ from typing import List
 import os
 from storeapp.localization.internalization import gettext
 
+
 #pip install python-dotenc ....values stored in .env file
 MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN")
 MAILGUN_API_KEY = os.environ.get("MAILGUN_API_KEY")

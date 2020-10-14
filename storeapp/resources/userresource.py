@@ -84,7 +84,7 @@ class UserLogin(Resource):
 
     def post(self):
         try:
-            user_data = user_schema.load(request.get_json(),partial=("mail",))
+            user_data = user_schema.load(request.get_json(),partial=("email",))
         except ValidationError as ve:
             return ve.messages,400
 

@@ -2,13 +2,8 @@ from flask_restful import Resource
 from storeapp.models.usermodel import UserModel, ConfirmationModel
 from flask import make_response, render_template
 from storeapp.mail.emailsender import send_email_confirmation, MailGunException
+from storeapp.localization.internalization import gettext
 
-INVALID_CONFIRMATION_TOKEN = "Invalid confirmation token passed"
-TOKEN_EXPIRED = "Token has expired"
-INVALID_USER = "Invalid user id passed"
-USER_ACTIVATED = "User is already active"
-EMAIL_SENT = "Registration email resent successfully"
-EMAIL_SEND_FAILED = "Registration email resend failed"
 
 class ConfirmationResource(Resource):
 
@@ -17,7 +12,7 @@ class ConfirmationResource(Resource):
         confirmation = ConfirmationModel.find_by_id(token)
         if (confirmation):
             if(confirmation.expired()):
-                 return {"message":TOKEN_EXPIRED}, 400
+                 return {"message":(gettext("token_expired"))}, 400
             else:
                 user = confirmation.user
                 user.activated = True
@@ -25,7 +20,7 @@ class ConfirmationResource(Resource):
                 confirmation.delete()
                 return make_response(render_template('confirmation_page.html', email=user.email), 200,{"Content-Type": "text/html"})
         else:
-            return {"message": INVALID_CONFIRMATION_TOKEN}, 400
+            return {"message": gettext("invalid_token")}, 400
 
 class ResendConfirmationresource(Resource):
 
@@ -33,16 +28,16 @@ class ResendConfirmationresource(Resource):
     def post(cls,email_id: str):
         user = UserModel.find_by_email(email_id)
         if not user:
-            return {"message":INVALID_USER},400
+            return {"message":gettext("invalid_user")},400
         if user.activated:
-            return {"message":USER_ACTIVATED},400
+            return {"message":gettext("user_activated")},400
         confirmation = user.confirmation
         try:
             send_email(user.id)
             confirmation.delete()
-            return {"message":EMAIL_SENT},200
+            return {"message":gettext("email_sent")},200
         except MailGunException as e:
-            return {"message":EMAIL_SEND_FAILED},500
+            return {"message":gettext("email_send_failed")},500
 
 def send_email(user_id:int):
     confirmation = ConfirmationModel(user_id)
