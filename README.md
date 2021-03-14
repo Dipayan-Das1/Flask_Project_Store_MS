@@ -1,1 +1,1 @@
-# Flask_Project_Store_MS
+A Python based microservice using Flask. Features developed include: ORM using sqlalchemy, using Flask JWT for token based autrhentication, using git based OAuth for authentication, marshmallow based request parsing 
