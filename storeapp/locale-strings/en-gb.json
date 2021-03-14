@@ -1,0 +1,23 @@
+{
+  "mailgun_domain_not_loaded":"Mailgun domain could not be loaded",
+  "mailgun_api_key_not_found": "Mailgun API key could not be loaded",
+  "email_not_sent": "Registration email could not be sent",
+  "user_exists" : "User with name {} already exists",
+  "user_created" : "User created",
+  "user_created_email_sent" : "User created successfully. To complete registration click on the link sent in registration mail",
+  "user_creation_failed" : "User creation failed",
+  "invalid_token" : "Invalid confirmation token passed",
+  "token_expired" : "Token has expired",
+  "invalid_user" : "Invalid user id passed",
+  "user_activated" : "User is already active",
+  "email_sent" : "Registration email resent successfully",
+  "email_send_failed" : "Registration email resend failed",
+  "image_uploaded" : "Image uploaded successfully",
+  "image_upload_failed": "Image upload failed",
+  "bad_file_request" : "Malicious file name. Request denied",
+  "file_not_exist":"File does not exist",
+  "error_get_image":"Error while getting image",
+  "error_delete_image":"Error while deleting image",
+  "file_delete_success":"File deleted successfully"
+
+}
